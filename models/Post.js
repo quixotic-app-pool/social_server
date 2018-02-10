@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: Question.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-08T14:46:11+08:00
+ * @Last modified time: 2018-02-10T17:37:00+08:00
  */
 
 var mongoose = require('mongoose');
@@ -19,7 +19,7 @@ var postSchema = new Schema({
     msg: { type: String, default: '' },
     from_user: { type: ObjectId, ref: 'User' },
     to_post: { type: ObjectId, ref: 'Post'},
-    reply: [{ type: ObjectId, ref: 'Post'}],
+    comments: [{ type: ObjectId, ref: 'Post'}],
     sharedBy: [{ type: ObjectId, ref: 'User' }],
     reportedBy: [{ type: ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now() }

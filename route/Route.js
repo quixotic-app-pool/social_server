@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: Route.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-08T15:04:21+08:00
+ * @Last modified time: 2018-02-10T17:43:35+08:00
  */
 
 var express = require('express');
@@ -15,6 +15,22 @@ var mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId
 var router = express.Router();
 var bodyParser = require('body-parser');         // pull information from HTML POST (express4)
+
+//nnd，multer 比较娇贵，只能走这了
+ var path = require('path')
+ var Jimp = require("jimp");
+ var multer = require('multer');
+ var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, __dirname + '/../imageuploaded/')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    }
+  })
+  var upload = multer({ storage: storage })
+
+
 router.use(bodyParser.json());                                     // parse application/json
 router.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
 
@@ -23,7 +39,6 @@ var https = require('https');
 var WXBizDataCrypt = require('../wechat_api/WXBizDataCrypt')
 var SessionModel = require('../models/Session')
 var UserModel = require("../models/User")
-
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -36,6 +51,28 @@ router.use(function timeLog(req, res, next) {
 var userCtrl = require("./controller/userCtrl");
 var notificationCtrl = require("./controller/notificationCtrl");
 var postCtrl = require("./controller/postCtrl");
+var activityCtrl = require('./controller/activityCtrl')
+
+
+//image files realted
+router.post('/api/upload/image', upload.single('file'), function(req, res, next) {
+  var filePath = __dirname + '/../imageuploaded/'
+  var logoPath = __dirname + '/../assets/images/logo.png'
+  var file= filePath + req.file.filename
+  Jimp.read(file).then(function (img) {
+      Jimp.read(logoPath).then(function(logoImg){
+        img.resize(480, Jimp.AUTO)            // resize
+           .quality(60)                 // set JPEG quality
+           .composite(logoImg, 10 , 10)
+           .write(file); // save
+       })
+    }).catch(function (err) {
+       console.error(err);
+   });
+  var reply = { img: file}
+  res.json(reply)
+})
+
 
 //wechat interaction
 router.get('/api/wechatactivity', function(req, res){
@@ -120,8 +157,9 @@ router.get('/api/fetchnotificationlist', notificationCtrl.fetchList)
 router.post('/api/updatenotification', notificationCtrl.update)
 
 //member
-router.get('/api/memberlist', memberCtrl.memberlist);
-router.get('/api/member', memberCtrl.member);
+router.get('/api/profilelist', userCtrl.profilelist);
+router.get('/api/profile', userCtrl.profile);
+router.post('/api/updateprofile', userCtrl.updateprofile);
 
 //post
 router.get('/api/fetchpostlist', postCtrl.fetchpostlist);
@@ -130,7 +168,7 @@ router.post('/api/newpost', postCtrl.newpost);
 router.post('/api/delpost', postCtrl.delpost);
 
 //activity
-router.post('/api/activitylist', postCtrl.activitylist);
+router.post('/api/activitylist', activityCtrl.activitylist);
 
 //comment
 router.get('/api/commentlist', postCtrl.commentlist);

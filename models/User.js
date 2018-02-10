@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: User.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-08T14:54:06+08:00
+ * @Last modified time: 2018-02-10T16:52:09+08:00
  */
 
 var mongoose = require('mongoose');
@@ -30,16 +30,16 @@ var userSchema = new Schema({
       weight: { type: String, default: ''},
       imgUrls: [{ type: String, default: ''}],
       timeline_imgUrls: [{ type: String, default: ''}],
-       myInfo: [{title: {type: String, default: ''}, value: {type: String, default: ''}}],
-       myTags: [{type: String, default: ''}],
-       sports: [{type: String, default: ''}],
-       music: [{type: String, default: ''}],
-       food: [{type: String, default: ''}],
-       tv: [{type: String, default: ''}],
-       book: [{type: String, default: ''}],
-       place: [{type: String, default: ''}],
-       myAns: [{title: {type: String, default: ''}, value: {type: String, default: ''}}]
-    }
+      myInfo: [{title: {type: String, default: ''}, value: {type: String, default: ''}}],
+      myTags: [{type: String, default: ''}],
+      sports: [{type: String, default: ''}],
+      music: [{type: String, default: ''}],
+      food: [{type: String, default: ''}],
+      tv: [{type: String, default: ''}],
+      book: [{type: String, default: ''}],
+      place: [{type: String, default: ''}],
+      myAns: [{title: {type: String, default: ''}, value: {type: String, default: ''}}]
+    },
     createdAt: { type: Date, default: Date.now() }
 })
 module.exports = mongoose.model('User', userSchema);
