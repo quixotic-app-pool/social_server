@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: Route.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-13T14:34:19+08:00
+ * @Last modified time: 2018-02-13T14:43:12+08:00
  */
 
 var express = require('express');
@@ -62,21 +62,21 @@ var activityCtrl = require('./controller/activityCtrl')
 
 
 //image files realted
-router.post('/api/upload/image', upload.single('file'), function(req, res, next) {
+router.post('/api2/upload/image', upload.single('file'), function(req, res, next) {
   var filePath = __dirname + '/../imageuploaded/'
   // var logoPath = __dirname + '/../assets/images/logo.png'
   var file= filePath + req.file.filename
   //ali OSS
-  // console.log('going to process ali OSS');
+  console.log('going to process ali OSS');
   co(function* () {
     client.useBucket('image-storage-space');
     var result = yield client.put(req.file.filename, file);
-    // console.log('finish the process ali OSS');
+    console.log('finish the process ali OSS');
     console.log(result);
     res.json({ img: result.url})
   }).catch(function (err) {
     console.log(err);
-    // console.log('the process of ali OSS failed');
+    console.log('the process of ali OSS failed');
   });
 
   // Jimp.read(file).then(function (img) {
@@ -105,7 +105,7 @@ router.post('/api/upload/image', upload.single('file'), function(req, res, next)
 
 
 //wechat interaction
-router.get('/api/wechatactivity', function(req, res){
+router.get('/api2/wechatactivity', function(req, res){
       // console.log('/api/wechatactivity: ' + req.query.code)
       var reqData = req.query
       var appId = ''
@@ -186,33 +186,33 @@ router.get('/api/wechatactivity', function(req, res){
 })
 
 //notification
-router.get('/api/fetchnotificationnum', notificationCtrl.fetchNum)
-router.get('/api/fetchnotificationlist', notificationCtrl.fetchList)
-router.post('/api/updatenotification', notificationCtrl.update)
+router.get('/api2/fetchnotificationnum', notificationCtrl.fetchNum)
+router.get('/api2/fetchnotificationlist', notificationCtrl.fetchList)
+router.post('/api2/updatenotification', notificationCtrl.update)
 
 //member
-router.get('/api/profilelist', userCtrl.profileList);
-router.get('/api/profile', userCtrl.profile);
-router.post('/api/updateprofile', userCtrl.updateProfile);
+router.get('/api2/profilelist', userCtrl.profileList);
+router.get('/api2/profile', userCtrl.profile);
+router.post('/api2/updateprofile', userCtrl.updateProfile);
 
 //post
-router.get('/api/fetchpostlist', postCtrl.fetchList);
-router.get('/api/fetchpost', postCtrl.fetchPost);
-router.post('/api/newpost', postCtrl.newPost);
-router.post('/api/delpost', postCtrl.delPost);
+router.get('/api2/fetchpostlist', postCtrl.fetchList);
+router.get('/api2/fetchpost', postCtrl.fetchPost);
+router.post('/api2/newpost', postCtrl.newPost);
+router.post('/api2/delpost', postCtrl.delPost);
 
 //activity
-router.post('/api/activitylist', activityCtrl.activityList);
+router.post('/api2/activitylist', activityCtrl.activityList);
 
 //comment
-router.get('/api/commentlist', postCtrl.fetchList);
-router.post('/api/comment', postCtrl.comment);
-router.post('/api/like', postCtrl.like);
-router.post('/api/report', postCtrl.report);
+router.get('/api2/commentlist', postCtrl.fetchList);
+router.post('/api2/comment', postCtrl.comment);
+router.post('/api2/like', postCtrl.like);
+router.post('/api2/report', postCtrl.report);
 
 //user
-router.get('/api/user', userCtrl.info);
-router.post('/api/subscribe', userCtrl.subscribe);
-router.post('/api/unsubscribe', userCtrl.unsubscribe);
+router.get('/api2/user', userCtrl.info);
+router.post('/api2/subscribe', userCtrl.subscribe);
+router.post('/api2/unsubscribe', userCtrl.unsubscribe);
 
 module.exports = router;
