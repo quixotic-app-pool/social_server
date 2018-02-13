@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: notificationCtrl.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-10T17:26:52+08:00
+ * @Last modified time: 2018-02-12T19:32:44+08:00
  */
 
 var CircularJSON = require('circular-json');
@@ -25,7 +25,7 @@ function fetchNum (req, res) {
         num++
       }
     })
-    // console.log(num);
+    // console.log('num: ' + num);
     res.json({flag:'success', numOfNotif: num})
   })
 

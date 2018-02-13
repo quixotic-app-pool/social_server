@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: Route.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-10T17:43:35+08:00
+ * @Last modified time: 2018-02-13T14:34:19+08:00
  */
 
 var express = require('express');
@@ -16,9 +16,16 @@ const ObjectId = mongoose.Types.ObjectId
 var router = express.Router();
 var bodyParser = require('body-parser');         // pull information from HTML POST (express4)
 
+var co = require('co');
+var OSS = require('ali-oss');
+var client = new OSS({
+
+});
+
+
 //nnd，multer 比较娇贵，只能走这了
  var path = require('path')
- var Jimp = require("jimp");
+ // var Jimp = require("jimp");
  var multer = require('multer');
  var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -57,20 +64,43 @@ var activityCtrl = require('./controller/activityCtrl')
 //image files realted
 router.post('/api/upload/image', upload.single('file'), function(req, res, next) {
   var filePath = __dirname + '/../imageuploaded/'
-  var logoPath = __dirname + '/../assets/images/logo.png'
+  // var logoPath = __dirname + '/../assets/images/logo.png'
   var file= filePath + req.file.filename
-  Jimp.read(file).then(function (img) {
-      Jimp.read(logoPath).then(function(logoImg){
-        img.resize(480, Jimp.AUTO)            // resize
-           .quality(60)                 // set JPEG quality
-           .composite(logoImg, 10 , 10)
-           .write(file); // save
-       })
-    }).catch(function (err) {
-       console.error(err);
-   });
-  var reply = { img: file}
-  res.json(reply)
+  //ali OSS
+  // console.log('going to process ali OSS');
+  co(function* () {
+    client.useBucket('image-storage-space');
+    var result = yield client.put(req.file.filename, file);
+    // console.log('finish the process ali OSS');
+    console.log(result);
+    res.json({ img: result.url})
+  }).catch(function (err) {
+    console.log(err);
+    // console.log('the process of ali OSS failed');
+  });
+
+  // Jimp.read(file).then(function (img) {
+  //     Jimp.read(logoPath).then(function(logoImg){
+  //       img.resize(480, Jimp.AUTO)            // resize
+  //          .quality(60)                 // set JPEG quality
+  //          .composite(logoImg, 10 , 10)
+  //          .write(file); // save
+  //          //ali OSS
+  //          console.log('going to process ali OSS');
+  //          co(function* () {
+  //             client.useBucket('image-storage-space');
+  //             var result = yield client.put(req.file.filename, file);
+  //             console.log('finish the process ali OSS');
+  //             console.log(result);
+  //             res.json({ img: result.url})
+  //           }).catch(function (err) {
+  //             console.log(err);
+  //             console.log('the process of ali OSS failed');
+  //           });
+  //      })
+  //   }).catch(function (err) {
+  //      console.error(err);
+  //  });
 })
 
 
@@ -126,7 +156,7 @@ router.get('/api/wechatactivity', function(req, res){
                     UserModel.findOne({oId: body.openid}, function(err, docs2){
                       if(err)console.log(err);
                       if(docs2) {
-                        back.json({flag: 'success', user_id: docs2._id, user_position:docs2.position, session: {sessionId: _3rd_session, createdAt: now}})
+                        back.json({flag: 'success', user_id: docs2._id, nickName: docs2.intro.nickName,  gender: docs2.intro.gender, session: {sessionId: _3rd_session, createdAt: now}})
                       } else {
                         // console.log('reqData: ' + typeof reqData.userInfo);
                         // console.log('reqData.userInfo.nickName: ' + userInfo.nickName);
@@ -140,7 +170,11 @@ router.get('/api/wechatactivity', function(req, res){
                         })
                         userEntity.save(function(err, data) {
                           if(err)console.log(err);
-                          back.json({flag: 'success', user_id: data._id, user_position:data.position, session: {sessionId: _3rd_session, createdAt: now}})
+                          data.subscriptions.push(data._id);
+                          data.save(function(err, data) {
+                            if(err)console.log(err);
+                            back.json({flag: 'success', user_id: data._id, nickName: data.intro.nickName, gender: data.intro.gender, session: {sessionId: _3rd_session, createdAt: now}})
+                          })
                         })
                       }
                     })
@@ -157,21 +191,21 @@ router.get('/api/fetchnotificationlist', notificationCtrl.fetchList)
 router.post('/api/updatenotification', notificationCtrl.update)
 
 //member
-router.get('/api/profilelist', userCtrl.profilelist);
+router.get('/api/profilelist', userCtrl.profileList);
 router.get('/api/profile', userCtrl.profile);
-router.post('/api/updateprofile', userCtrl.updateprofile);
+router.post('/api/updateprofile', userCtrl.updateProfile);
 
 //post
-router.get('/api/fetchpostlist', postCtrl.fetchpostlist);
-router.get('/api/fetchpost', postCtrl.fetchpost);
-router.post('/api/newpost', postCtrl.newpost);
-router.post('/api/delpost', postCtrl.delpost);
+router.get('/api/fetchpostlist', postCtrl.fetchList);
+router.get('/api/fetchpost', postCtrl.fetchPost);
+router.post('/api/newpost', postCtrl.newPost);
+router.post('/api/delpost', postCtrl.delPost);
 
 //activity
-router.post('/api/activitylist', activityCtrl.activitylist);
+router.post('/api/activitylist', activityCtrl.activityList);
 
 //comment
-router.get('/api/commentlist', postCtrl.commentlist);
+router.get('/api/commentlist', postCtrl.fetchList);
 router.post('/api/comment', postCtrl.comment);
 router.post('/api/like', postCtrl.like);
 router.post('/api/report', postCtrl.report);
@@ -179,5 +213,6 @@ router.post('/api/report', postCtrl.report);
 //user
 router.get('/api/user', userCtrl.info);
 router.post('/api/subscribe', userCtrl.subscribe);
+router.post('/api/unsubscribe', userCtrl.unsubscribe);
 
 module.exports = router;

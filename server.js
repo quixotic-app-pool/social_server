@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: server.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-01-03T13:55:22+08:00
+ * @Last modified time: 2018-02-10T18:05:38+08:00
  */
 
 var express  = require('express');
@@ -20,7 +20,7 @@ var database = require('./config/Database')
 //Routes
 app.use(route);
 // app.use(express.static(__dirname + '/imageuploaded'));
-var port = process.env.PORT || 9000;
+var port = process.env.PORT || 8000;
 var db = mongoose.connect(database.url)
 
 

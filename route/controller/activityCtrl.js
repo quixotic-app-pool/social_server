@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: activityCtrl.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-10T17:26:47+08:00
+ * @Last modified time: 2018-02-10T18:03:25+08:00
  */
 
  var mongoose = require('mongoose');
@@ -17,7 +17,7 @@
  const ObjectId = mongoose.Types.ObjectId
  var ActivityModel = require("../../models/Activity")
 
- function activitylist (req, res) {
+ function activityList (req, res) {
    var currentPage = parseInt(req.query.currentPage);
    var option = {
       limit: 10,
@@ -35,5 +35,5 @@
  }
 
  module.exports = {
-   activitylist
+   activityList
  }

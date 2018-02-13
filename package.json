@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ali-oss": "^4.12.2",
     "body-parser": "^1.18.2",
     "circular-json": "^0.5.1",
+    "co": "^4.6.0",
     "dateformat": "^3.0.2",
     "express": "^4.16.2",
     "https": "^1.0.0",

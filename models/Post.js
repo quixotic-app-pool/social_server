@@ -5,7 +5,7 @@
  * @Project: one_server
  * @Filename: Question.js
  * @Last modified by:   mymac
- * @Last modified time: 2018-02-10T17:37:00+08:00
+ * @Last modified time: 2018-02-11T14:54:51+08:00
  */
 
 var mongoose = require('mongoose');
@@ -17,6 +17,9 @@ var postSchema = new Schema({
     likedBy: [{ type: ObjectId, ref: 'User' }],
     imgUrls: [{type: String, default: ''}],
     msg: { type: String, default: '' },
+    location: { type: String, default: '' },
+    latitude: { type: String, default: '' },
+    longitude: { type: String, default: '' },
     from_user: { type: ObjectId, ref: 'User' },
     to_post: { type: ObjectId, ref: 'Post'},
     comments: [{ type: ObjectId, ref: 'Post'}],
